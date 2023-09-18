@@ -4,7 +4,7 @@ interface IApiPaths {
 }
 
 export const ApiPaths: IApiPaths[] = [
-  { url: "/log", router: "log" },
+  { url: "/libros", router: "libros" },
   { url: "/modulos", router: "modulos" },
   { url: "/usuarios", router: "usuarios" },
   { url: "/sesiones", router: "sesiones" },

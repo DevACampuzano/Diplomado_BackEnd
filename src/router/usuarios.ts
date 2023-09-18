@@ -36,7 +36,7 @@ router.post(
   "/",
   [
     check("nombres", "Los nombres son obligatorios").notEmpty(),
-    check("apellidos", "Los nombres son obligatorios").notEmpty(),
+    check("apellidos", "Los apellidos son obligatorios").notEmpty(),
     check("email", "El correo es obligatorio").isEmail(),
     check("password", "La contraseña es obligatoria").notEmpty(),
     check("password").custom(validatePasswordFormat),
@@ -44,11 +44,6 @@ router.post(
       "numero_identificacion",
       "El numero de identificacion es obligatoria"
     ).notEmpty(),
-    check(
-      "id_tipo_documento",
-      "El tipo de documento es obligatoria"
-    ).notEmpty(),
-    check("id_tipo_persona", "El tipo de persona es obligatoria").notEmpty(),
     validarCampos,
   ],
   registerUser

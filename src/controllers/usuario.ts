@@ -136,7 +136,6 @@ const registerUser = async (req: Request, res: Response) => {
     apellidos,
     direccion,
     email,
-    id_tipo_documento,
     nombres,
     numero_identificacion,
     numero_telefono,
@@ -152,9 +151,7 @@ const registerUser = async (req: Request, res: Response) => {
     }
     const validateExist = await existUser(
       email,
-      id_tipo_documento,
       numero_identificacion,
-      true
     );
 
     if (validateExist.estado) {
@@ -167,7 +164,6 @@ const registerUser = async (req: Request, res: Response) => {
       apellidos,
       direccion,
       email,
-      id_tipo_documento,
       nombres,
       numero_identificacion,
       numero_telefono,
@@ -210,7 +206,6 @@ const updateUser = async (req: Request, res: Response) => {
     apellidos,
     direccion,
     email,
-    id_tipo_documento,
     nombres,
     numero_identificacion,
     numero_telefono,
@@ -229,12 +224,10 @@ const updateUser = async (req: Request, res: Response) => {
       }
     }
 
-    if (email || id_tipo_documento || numero_identificacion) {
+    if (email ||  numero_identificacion) {
       const validateData = await existUser(
         email,
-        id_tipo_documento,
-        numero_identificacion,
-        true
+        numero_identificacion
       );
       if (!validateData.estado) {
         const { estado, code, msg } = validateData;
@@ -258,7 +251,6 @@ const updateUser = async (req: Request, res: Response) => {
       apellidos,
       direccion,
       email,
-      id_tipo_documento,
       nombres,
       numero_identificacion,
       numero_telefono,

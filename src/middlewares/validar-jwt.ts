@@ -11,7 +11,7 @@ const validarJWT = async (req: Request, res: Response, next: () => void) => {
   if (typeof token === "object") {
     return res.status(503).json({
       estado: false,
-      msg: "Not provided token",
+      msg: "NOT-PROVIDED-TOKEN",
     });
   }
 
@@ -23,13 +23,13 @@ const validarJWT = async (req: Request, res: Response, next: () => void) => {
           await disableSession(token);
         }
         console.log(err);
-        return res.status(503).json({ estado: false, msg: "Invalid Token" });
+        return res.status(503).json({ estado: false, msg: "INVALID-TOKEN" });
       } else {
         req.body["decoded"] = decoded;
         if (typeof req.ip === "object") {
           return res.status(503).json({
             estado: false,
-            msg: "Not provided ip",
+            msg: "NOT-PROVIDED-IP",
           });
         }
         next();
@@ -38,7 +38,7 @@ const validarJWT = async (req: Request, res: Response, next: () => void) => {
   } else {
     res.status(503).json({
       estado: false,
-      msg: "Not provided token",
+      msg: "NOT-PROVIDED-TOKEN",
     });
   }
 };

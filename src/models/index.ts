@@ -1,6 +1,7 @@
-export { default as ModelLog } from "./log";
+export { default as ModelBooks } from "./libros";
 export { default as ModelUser } from "./usuario";
 export { default as ModelModule } from "./modulo";
+export { default as ModelLoans } from "./pretamos";
 export { default as ModelActions } from "./acciones";
 export { default as ModelSessions } from "./sesiones";
 export { default as ModelPermissions } from "./permisos";

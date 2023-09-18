@@ -10,6 +10,6 @@ const db = new Sequelize(nameDB, userDB, PasswordDB, {
   timezone: "-05:00",
 });
 
-db.sync({ alter: false, force: false });
+db.sync({ alter: true, force: false });
 
 export default db;

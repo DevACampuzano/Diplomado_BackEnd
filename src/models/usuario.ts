@@ -42,14 +42,6 @@ const Usuarios = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    id_tipo_documento: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    id_tipo_persona: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
     id_grupos_usuarios: {
       type: DataTypes.BIGINT,
       allowNull: false,

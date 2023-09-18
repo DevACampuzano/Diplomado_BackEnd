@@ -1,5 +1,5 @@
-export { default as LogsController } from "./log";
 export { default as UserController } from "./usuario";
+export { default as BooksController } from "./libros";
 export { default as ModulesController } from "./modulos";
 export { default as ActionsController } from "./acciones";
 export { default as SessionsController } from "./sesiones";
