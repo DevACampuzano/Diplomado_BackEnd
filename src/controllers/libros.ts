@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import { ModelBooks } from "../models";
 import helpers from "../helpers";
 import db from "../db/connection";
+import { UploadedFile } from "express-fileupload";
+import { FilesController } from "../utils";
+import { ResultGetFile } from "../utils/Files";
 
+const { salveFile, getFile } = FilesController;
 const { validarPermisos } = helpers;
 
 const getBook = async (req: Request, res: Response) => {
@@ -16,17 +20,21 @@ const getBook = async (req: Request, res: Response) => {
       return res.status(code).json({ estado, msg });
     }
 
-    const action = await ModelBooks.findOne({
+    const book = await ModelBooks.findOne({
       where: { id, estado: true },
-    });
+    }).then((book) => JSON.parse(JSON.stringify(book)));
 
-    if (!action) {
+    if (!book) {
       return res
         .status(401)
         .json({ estado: false, msg: "No se encuentra el libro registrado." });
     }
 
-    return res.json({ estado: true, action });
+    if (book.foto) {
+      book.foto = await getFile(book.foto);
+    }
+
+    return res.json({ estado: true, book });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -46,18 +54,27 @@ const getBooks = async (req: Request, res: Response) => {
       return res.status(code).json({ estado, msg });
     }
 
-    const actions = await ModelBooks.findAll({
+    const books = await ModelBooks.findAll({
       where: { ...where, estado: true },
-      order: [["nombre", "ASC"]],
-    });
+      order: [["titulo", "ASC"]],
+    }).then((book) => JSON.parse(JSON.stringify(book)));
 
-    if (actions.length === 0) {
+    if (books.length === 0) {
       return res
         .status(401)
         .json({ estado: false, msg: "No se encuentra libros." });
     }
 
-    return res.json({ estado: true, actions });
+    await Promise.all(
+      books.map(async (book: { foto: string | ResultGetFile }) => {
+        if (book.foto) {
+          book.foto = await getFile(book.foto as string);
+        }
+        return book;
+      })
+    );
+
+    return res.json({ estado: true, books });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -69,21 +86,36 @@ const getBooks = async (req: Request, res: Response) => {
 
 const createBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, titulo, autor, descripcion, disponibilidad, foto } =
-    req.body;
+  const { decoded, titulo, autor, descripcion, disponibilidad } = req.body;
   try {
+    let foto: UploadedFile | UploadedFile[] | undefined = undefined;
+    if (req.files) {
+      foto = req.files.foto;
+    }
+
     const validate = await validarPermisos(decoded, 2, 10);
     if (!validate.estado) {
       const { estado, code, msg } = validate;
       return res.status(code).json({ estado, msg });
     }
-    const userGroup = await ModelBooks.create(
+    const book = await ModelBooks.create(
       { titulo, autor, descripcion, disponibilidad },
       { transaction }
-    );
+    ).then((book) => JSON.parse(JSON.stringify(book)));
+
+    if (foto) {
+      const newPhoto =
+        "book/" +
+        (await salveFile(foto as UploadedFile, "book", book.id, "image"));
+
+      await ModelBooks.update(
+        { foto: newPhoto },
+        { where: { id: book.id, estado: true }, transaction }
+      );
+    }
 
     await transaction.commit();
-    return res.status(201).json({ estado: true, userGroup });
+    return res.status(201).json({ estado: true, book });
   } catch (error) {
     console.log(error);
     await transaction.rollback();

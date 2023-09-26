@@ -16,6 +16,11 @@ const existFolder = () => {
       recursive: true,
     });
   }
+  if (!fs.existsSync(path.join(__dirname, "../../../private/book"))) {
+    fs.mkdirSync(path.join(__dirname, "../../../private/book"), {
+      recursive: true,
+    });
+  }
   if (!fs.existsSync(path.join(__dirname, "../../../tmp"))) {
     fs.mkdirSync(path.join(__dirname, "../../../tmp"), {
       recursive: true,
