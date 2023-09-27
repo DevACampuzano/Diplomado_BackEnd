@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import path from "path";
 import fs from "fs";
 import { Crypt } from "./";
@@ -81,20 +82,24 @@ const salveFile = (
 };
 
 const getFile = (rutaFile: string): Promise<ResultGetFile> => {
-  return new Promise((resolve, reject) => {
-    if (rutaFile.length === 0) {
-      reject("Debe ingresar la ruta del archivo.");
-    }
-    const cutName = rutaFile.split(".");
-    const extension = cutName[cutName.length - 1];
-    const ruta = path.join(__dirname, "../../../private/", rutaFile);
-    fs.readFile(ruta, (err, data) => {
-      if (err) {
-        reject(err);
+  try {
+    return new Promise((resolve, reject) => {
+      if (rutaFile.length === 0) {
+        reject("Debe ingresar la ruta del archivo.");
       }
-      resolve({ Base64: data.toString("base64"), extension: extension });
+      const cutName = rutaFile.split(".");
+      const extension = cutName[cutName.length - 1];
+      const ruta = path.join(__dirname, "../../../private/", rutaFile);
+      fs.readFile(ruta, (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve({ Base64: data.toString("base64"), extension: extension });
+      });
     });
-  });
+  } catch (error) {
+    throw error;
+  }
 };
 
 const deleteFile = (rutaFile: string): Promise<boolean> => {
