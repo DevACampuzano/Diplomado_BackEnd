@@ -93,8 +93,66 @@ const createBook = async (req: Request, res: Response) => {
     });
   }
 };
+
+const updateBook = async (req: Request, res: Response) => {
+  const transaction = await db.transaction();
+  const { decoded, bookId, titulo, autor, descripcion, disponibilidad, foto } = req.body;
+
+  try {
+    const validate = await validarPermisos(decoded, 3, 10);
+    if (!validate.estado) {
+      const { estado, code, msg } = validate;
+      return res.status(code).json({ estado, msg });
+    }
+
+    const updatedBook = await ModelBooks.update(
+      { titulo, autor, descripcion, disponibilidad },
+      { where: { id: bookId }, transaction }
+    );
+
+    await transaction.commit();
+    return res.status(201).json({ estado: true, updatedBook });
+  } catch (error) {
+    console.log(error);
+    await transaction.rollback();
+    return res.status(500).json({
+      estado: false,
+      msg: "Comuníquese con el administrador. Error: Book-Update-Controller-0003.",
+    });
+  }
+};
+
+const deleteBook = async (req: Request, res: Response) => {
+  const transaction = await db.transaction();
+  const { decoded, bookId } = req.body;
+
+  try {
+    const validate = await validarPermisos(decoded, 4, 10);
+    if (!validate.estado) {
+      const { estado, code, msg } = validate;
+      return res.status(code).json({ estado, msg });
+    }
+
+    const deletedBookCount = await ModelBooks.destroy({
+      where: { id: bookId },
+      transaction,
+    });
+
+    await transaction.commit();
+    return res.status(200).json({ estado: true, deletedBookCount });
+  } catch (error) {
+    console.log(error);
+    await transaction.rollback();
+    return res.status(500).json({
+      estado: false,
+      msg: "Comuníquese con el administrador. Error: Book-Delete-Controller-0003.",
+    });
+  }
+};
 export default {
   getBook,
   getBooks,
   createBook,
+  updateBook,
+  deleteBook,
 };
