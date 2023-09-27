@@ -149,10 +149,7 @@ const registerUser = async (req: Request, res: Response) => {
     } else {
       foto = undefined;
     }
-    const validateExist = await existUser(
-      email,
-      numero_identificacion,
-    );
+    const validateExist = await existUser(email, numero_identificacion);
 
     if (validateExist.estado) {
       const { estado, code, msg } = validateExist;
@@ -224,11 +221,8 @@ const updateUser = async (req: Request, res: Response) => {
       }
     }
 
-    if (email ||  numero_identificacion) {
-      const validateData = await existUser(
-        email,
-        numero_identificacion
-      );
+    if (email || numero_identificacion) {
+      const validateData = await existUser(email, numero_identificacion);
       if (!validateData.estado) {
         const { estado, code, msg } = validateData;
         return res.status(code).json({ estado, msg });
@@ -431,12 +425,14 @@ const recoverAccount = async (req: Request, res: Response) => {
       },
     }).then((user) => JSON.parse(JSON.stringify(user)));
     if (user) {
+      const token = jwt.sign({ id:user.id }, Config.secret, { expiresIn: "2h" });
       const result = await Email.enviarEmailPersonalizado(
         "Recuperar Contraseña",
         [user.email],
         "../../assets/emails/recoverEmail.html",
         {
-          verificationLink: `${Config.urlFront}/account/forget/`,
+          verificationLink: `${Config.urlFront}/account/forget/${token}`,
+          names: user.nombres + " " + user.apellidos,
         }
       );
       console.log(result);

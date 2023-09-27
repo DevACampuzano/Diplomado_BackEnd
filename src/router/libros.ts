@@ -3,7 +3,7 @@ import { check } from "express-validator";
 import middlewares from "../middlewares/";
 import { BooksController } from "../controllers";
 const { validarJWT, validarCampos } = middlewares;
-const { getBook, getBooks, createBook } = BooksController;
+const { getBook, getBooks, createBook, deleteBook } = BooksController;
 const router = Router();
 
 router.get("/", [validarJWT], getBooks);
@@ -25,6 +25,12 @@ router.post(
     validarCampos,
   ],
   createBook
+);
+
+router.delete(
+  "/:id",
+  [validarJWT, check("id", "El id es obligatorio").notEmpty(), validarCampos],
+  deleteBook
 );
 
 module.exports = router;

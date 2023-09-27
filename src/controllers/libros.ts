@@ -128,7 +128,8 @@ const createBook = async (req: Request, res: Response) => {
 
 const updateBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, bookId, titulo, autor, descripcion, disponibilidad, foto } = req.body;
+  const { decoded, bookId, titulo, autor, descripcion, disponibilidad, foto } =
+    req.body;
 
   try {
     const validate = await validarPermisos(decoded, 3, 10);
@@ -156,7 +157,8 @@ const updateBook = async (req: Request, res: Response) => {
 
 const deleteBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, bookId } = req.body;
+  const { id } = req.params;
+  const { decoded } = req.body;
 
   try {
     const validate = await validarPermisos(decoded, 4, 10);
@@ -165,13 +167,13 @@ const deleteBook = async (req: Request, res: Response) => {
       return res.status(code).json({ estado, msg });
     }
 
-    const deletedBookCount = await ModelBooks.destroy({
-      where: { id: bookId },
-      transaction,
-    });
+    const deletedBook = await ModelBooks.update(
+      { estado: false },
+      { where: { id: id }, transaction }
+    );
 
     await transaction.commit();
-    return res.status(200).json({ estado: true, deletedBookCount });
+    return res.status(200).json({ estado: true, deletedBook });
   } catch (error) {
     console.log(error);
     await transaction.rollback();
