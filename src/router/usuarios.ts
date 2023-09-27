@@ -93,12 +93,10 @@ router.post(
   recoverAccount
 );
 
-router.put(
-  "/change-password/:id",
+router.post(
+  "/change-password/",
   [
     validarJWT,
-    check("id", "El id es obligatorio").notEmpty(),
-    check("id").custom(existUserPorID),
     check("password", "La contraseña es obligatoria").notEmpty(),
     check("password").custom(validatePasswordFormat),
     validarCampos,

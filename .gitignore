@@ -5,3 +5,5 @@ private/profile/
 private/voucher/
 .vscode/
 tmp/
+
+*.png

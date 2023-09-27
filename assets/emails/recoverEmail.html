@@ -10,31 +10,37 @@
       body {
         margin: 0;
       }
-
-      .container {
-        height: 100vh;
-        background-color: #18181b;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .container__title {
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        color: white;
-      }
-
-      .container__text {
-        color: white;
-        font-family: "Poppins", sans-serif;
-        width: 90%;
-        margin: 2rem auto;
-      }
-
-      .container__boton {
-        background-color: #0070f0;
+    </style>
+  </head>
+  <body>
+    <div style="height: 100%;
+    background-color: #18181b;
+    display: grid;
+    text-align: center;
+    justify-content: center;
+    align-items: center;">
+      <h1 style="font-family: Verdana, Geneva, Tahoma, sans-serif;
+      color: white;">
+        Solicitud de restablecimiento de contraseña
+      </h1>
+      <br>
+      <p style="
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      width: 90%;
+      margin: 2rem auto;">Hola <b>{{info.names}}</b></p>
+      <br>
+      <p style="color: white;
+      font-family: 'Poppins', sans-serif;
+      width: 90%;
+      margin: 2rem auto;">
+        Recientemente hemos recibido una solicitud para restablecer la
+        contraseña de su cuenta. Para continuar con este proceso por favor
+        presione el siguiente botón.
+      </p>
+      <br>
+      <a href="{{info.verificationLink}}">
+        <button style="background-color: #0070f0;
         width: 300px;
         padding: 15px 20px;
         border-radius: 15px;
@@ -42,23 +48,7 @@
         color: white;
         font-weight: bold;
         margin-bottom: 3rem;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="container__title">
-        Solicitud de restablecimiento de contraseña
-      </h1>
-      <p class="container__text">Hola {{info.names}}</p>
-      <p class="container__text">
-        Recientemente hemos recibido una solicitud para restablecer la
-        contraseña de su cuenta. Para continuar con este proceso por favor
-        presione el siguiente botón.
-      </p>
-      <a href="{{info.verificationLink}}">
-        <button class="container__boton">Restablecer contraseña</button>
+        cursor: pointer;">Restablecer contraseña</button>
       </a>
     </div>
   </body>
