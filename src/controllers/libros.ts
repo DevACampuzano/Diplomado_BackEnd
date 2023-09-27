@@ -128,25 +128,31 @@ const createBook = async (req: Request, res: Response) => {
 
 const updateBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, bookId, titulo, autor, descripcion, disponibilidad, foto } =
+  const { decoded, bookId, titulo, autor, descripcion, disponibilidad } =
     req.body;
-
   try {
     let foto: UploadedFile | UploadedFile[] | undefined = undefined;
     if (req.files) {
       foto = req.files.foto;
     }
-      
+
     const validate = await validarPermisos(decoded, 3, 10);
     if (!validate.estado) {
       const { estado, code, msg } = validate;
       return res.status(code).json({ estado, msg });
     }
 
+    let newPhoto;
+    if (foto) {
+      newPhoto = await salveFile(foto as UploadedFile, "profile", bookId, "image");
+      newPhoto = "book/" + newPhoto;
+    }
+
     const updatedBook = await ModelBooks.update(
-      { titulo, autor, descripcion, disponibilidad },
+      { titulo, autor, descripcion, disponibilidad, foto: newPhoto },
       { where: { id: bookId }, transaction }
     );
+
 
     await transaction.commit();
     return res.status(201).json({ estado: true, updatedBook });
