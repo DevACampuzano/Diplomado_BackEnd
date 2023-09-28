@@ -4,8 +4,8 @@ import Usuarios from "./usuario";
 import Libros from "./libros";
 
 
-const Pretamos = db.define(
-  "Pretamos",
+const Prestamos = db.define(
+  "Prestamos",
   {
     id: {
       type: DataTypes.BIGINT,
@@ -20,6 +20,10 @@ const Pretamos = db.define(
       type: DataTypes.BIGINT,
       allowNull: false,
     },
+    fecha_devolucion:{
+      type: DataTypes.DATE,
+      allowNull:true,
+    },
     estado: {
       type: DataTypes.TINYINT,
       allowNull: false,
@@ -27,29 +31,30 @@ const Pretamos = db.define(
     },
   },
   {
-    tableName: "Pretamos",
-    timestamps: false,
+    tableName: "Prestamos",
+    createdAt: true,
+    updatedAt:false,
   }
 );
 
-Usuarios.hasMany(Pretamos, {
+Usuarios.hasMany(Prestamos, {
   foreignKey: "id_usuario",
   as: "Prestamos",
 });
 
-Pretamos.belongsTo(Usuarios, {
+Prestamos.belongsTo(Usuarios, {
   foreignKey: "id_usuario",
   as: "Usuario",
 });
 
-Libros.hasMany(Pretamos, {
+Libros.hasMany(Prestamos, {
   foreignKey: "id_libro",
   as: "Prestamos",
 });
 
-Pretamos.belongsTo(Libros, {
+Prestamos.belongsTo(Libros, {
   foreignKey: "id_libro",
   as: "Libros",
 });
 
-export default Pretamos;
+export default Prestamos;

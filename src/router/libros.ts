@@ -3,11 +3,20 @@ import { check } from "express-validator";
 import middlewares from "../middlewares/";
 import { BooksController } from "../controllers";
 const { validarJWT, validarCampos } = middlewares;
-const { getBook, getBooks, createBook, deleteBook, updateBook } =
-  BooksController;
+const {
+  getBook,
+  getBooks,
+  createBook,
+  deleteBook,
+  updateBook,
+  loanBook,
+  getLoanBook,
+  returnBook,
+} = BooksController;
 const router = Router();
 
-router.get("/", [validarJWT], getBooks);
+router.post("/get-books", [validarJWT], getBooks);
+router.post("/get-loan-book", [validarJWT], getLoanBook);
 
 router.get(
   "/:id",
@@ -26,6 +35,25 @@ router.post(
     validarCampos,
   ],
   createBook
+);
+
+router.post(
+  "/loan-book",
+  [
+    validarJWT,
+    check("id_libro", "El id_libro es obligatorio").notEmpty(),
+    validarCampos,
+  ],
+  loanBook
+);
+router.post(
+  "/return-book",
+  [
+    validarJWT,
+    check("id", "El id_libro es obligatorio").notEmpty(),
+    validarCampos,
+  ],
+  returnBook
 );
 
 router.put(
