@@ -128,37 +128,44 @@ const createBook = async (req: Request, res: Response) => {
 
 const updateBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, bookId, titulo, autor, descripcion, disponibilidad } =
-    req.body;
+  const { decoded, bookId, titulo, autor, descripcion, disponibilidad } = req.body;
+
   try {
-    let foto: UploadedFile | UploadedFile[] | undefined = undefined;
-    if (req.files) {
-      foto = req.files.foto;
-    }
+    let newPhoto: string | undefined;
 
     const validate = await validarPermisos(decoded, 3, 10);
     if (!validate.estado) {
-      const { estado, code, msg } = validate;
-      return res.status(code).json({ estado, msg });
+      const { code, msg } = validate;
+      return res.status(code).json({ estado: false, msg });
     }
 
-    if (foto) {
-      deleteFile(foto as );
-    }
+    const foto = req.files?.foto as UploadedFile | undefined;
 
-    let newPhoto;
     if (foto) {
-      newPhoto = await salveFile(foto as UploadedFile, "book", bookId, "image");
+      newPhoto = await salveFile(foto, "book", bookId, "image");
       newPhoto = "book/" + newPhoto;
+
+      const existingBook = await ModelBooks.findByPk(bookId);
+      if (existingBook) {
+        const existingPhoto = existingBook.getDataValue('foto');
+        if (existingPhoto) {
+          await deleteFile(existingPhoto);
+        }
+      }
+    } else {
+      const existingBook = await ModelBooks.findByPk(bookId);
+      if (existingBook) {
+        newPhoto = existingBook.getDataValue('foto');
+      }
     }
 
-    const updatedBook = await ModelBooks.update(
+    await ModelBooks.update(
       { titulo, autor, descripcion, disponibilidad, foto: newPhoto },
       { where: { id: bookId }, transaction }
     );
 
     await transaction.commit();
-    return res.status(201).json({ estado: true, updatedBook });
+    return res.status(201).json({ estado: true, updatedBook: { id: bookId, titulo, autor, descripcion, disponibilidad, foto: newPhoto } });
   } catch (error) {
     console.log(error);
     await transaction.rollback();
