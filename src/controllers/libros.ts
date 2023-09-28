@@ -6,7 +6,7 @@ import { UploadedFile } from "express-fileupload";
 import { FilesController } from "../utils";
 import { ResultGetFile } from "../utils/Files";
 
-const { salveFile, getFile } = FilesController;
+const { salveFile, getFile, deleteFile } = FilesController;
 const { validarPermisos } = helpers;
 
 const getBook = async (req: Request, res: Response) => {
@@ -142,9 +142,13 @@ const updateBook = async (req: Request, res: Response) => {
       return res.status(code).json({ estado, msg });
     }
 
+    if (foto) {
+      deleteFile(foto as );
+    }
+
     let newPhoto;
     if (foto) {
-      newPhoto = await salveFile(foto as UploadedFile, "profile", bookId, "image");
+      newPhoto = await salveFile(foto as UploadedFile, "book", bookId, "image");
       newPhoto = "book/" + newPhoto;
     }
 
@@ -152,7 +156,6 @@ const updateBook = async (req: Request, res: Response) => {
       { titulo, autor, descripcion, disponibilidad, foto: newPhoto },
       { where: { id: bookId }, transaction }
     );
-
 
     await transaction.commit();
     return res.status(201).json({ estado: true, updatedBook });
