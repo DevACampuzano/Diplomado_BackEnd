@@ -91,13 +91,18 @@ const getFile = (rutaFile: string): Promise<ResultGetFile> => {
       const extension = cutName[cutName.length - 1];
       const ruta = path.join(__dirname, "../../../private/", rutaFile);
       fs.readFile(ruta, (err, data) => {
-        if (err) {
-          reject(err);
+        try {
+          if (err) {
+            reject(err);
+          }
+          resolve({ Base64: data.toString("base64"), extension: extension });
+        } catch (error) {
+          console.log(error);
         }
-        resolve({ Base64: data.toString("base64"), extension: extension });
       });
     });
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

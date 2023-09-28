@@ -6,7 +6,7 @@ import { UploadedFile } from "express-fileupload";
 import { FilesController } from "../utils";
 import { ResultGetFile } from "../utils/Files";
 
-const { salveFile, getFile } = FilesController;
+const { salveFile, getFile, deleteFile } = FilesController;
 const { validarPermisos } = helpers;
 
 const getBook = async (req: Request, res: Response) => {
@@ -128,8 +128,8 @@ const createBook = async (req: Request, res: Response) => {
 
 const updateBook = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
-  const { decoded, bookId, titulo, autor, descripcion, disponibilidad } =
-    req.body;
+  const { id } = req.params;
+  const { decoded, titulo, autor, descripcion, disponibilidad } = req.body;
   try {
     let foto: UploadedFile | UploadedFile[] | undefined = undefined;
     if (req.files) {
@@ -142,17 +142,22 @@ const updateBook = async (req: Request, res: Response) => {
       return res.status(code).json({ estado, msg });
     }
 
+    const book = await ModelBooks.findOne({ where: { id } }).then((book) =>
+      JSON.parse(JSON.stringify(book))
+    );
     let newPhoto;
     if (foto) {
-      newPhoto = await salveFile(foto as UploadedFile, "profile", bookId, "image");
+      newPhoto = await salveFile(foto as UploadedFile, "book", id, "image");
       newPhoto = "book/" + newPhoto;
+      if (book.foto) {
+        await deleteFile(book.foto);
+      }
     }
 
     const updatedBook = await ModelBooks.update(
       { titulo, autor, descripcion, disponibilidad, foto: newPhoto },
-      { where: { id: bookId }, transaction }
+      { where: { id }, transaction }
     );
-
 
     await transaction.commit();
     return res.status(201).json({ estado: true, updatedBook });
